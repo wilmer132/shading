@@ -33,12 +33,12 @@ void main(void)
 
     // Normalize all values
     vec3 tan_norm = normalize(vtx_tangent);
-    vec4 bitan_norm = normalize(bitangent);
+    vec3 bitan_norm = normalize(bitangent);
 
     // Set up transformation matrix
     mat3 rotation = mat3(tan_norm, bitan_norm, vtx_normal);
 
-    mat3 tan2World = obj2WorldNorm * rotation;
+    tan2world = obj2worldNorm * rotation;
 
     // Tips:
     //
