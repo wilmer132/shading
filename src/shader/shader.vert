@@ -25,7 +25,7 @@ void main(void)
 {
     position = vec3(obj2world * vec4(vtx_position, 1));
 
-    // TODO CS248 Part3: Normal Mapping
+    // CS248 Part3: Normal Mapping
     // compute 3x3 tangent space to world space matrix here: tan2world
 
     // Calculate bitangent as last missing axis
@@ -34,11 +34,15 @@ void main(void)
     // Normalize all values
     vec3 tan_norm = normalize(vtx_tangent);
     vec3 bitan_norm = normalize(bitangent);
+    vec3 n_norm = normalize(vtx_normal);
 
     // Set up transformation matrix
-    mat3 rotation = mat3(tan_norm, bitan_norm, vtx_normal);
+    mat3 rotation = mat3(tan_norm, bitan_norm, n_norm);
+
+    // tan2world = obj3worldNorm.rotation
 
     tan2world = obj2worldNorm * rotation;
+    normal = obj2worldNorm * vtx_normal;
 
     // Tips:
     //
@@ -50,8 +54,6 @@ void main(void)
     // (3) obj2worldNorm is a 3x3 matrix transforming object space normals to world space normals
     // compute tangent space to world space matrix
     
-    normal = obj2worldNorm * vtx_normal;
-
     vertex_diffuse_color = vtx_diffuse_color;
     texcoord = vtx_texcoord;
     dir2camera = camera_position - position;
