@@ -80,11 +80,11 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     vec3 N_norm = normalize(N);
     
     // Direction vector
-    vec3 R = 2 * dot(L_norm, N_norm) * N_norm - L_norm;
+    vec3 R = (2 * dot(L_norm, N_norm) * N_norm) - L_norm;
 
     // Components for diffuse and specular
-    vec3 diffuse = dot(L_norm, N_norm) * diffuse_color;
-    vec3 specular = pow(dot(R, V_norm), specular_exponent) * specular_color;
+    vec3 diffuse = diffuse_color * max (0, dot(L_norm, N_norm));
+    vec3 specular = specular_color * pow(max (0, dot(R, V_norm)), specular_exponent);
 
     vec3 result = diffuse + specular;
 
