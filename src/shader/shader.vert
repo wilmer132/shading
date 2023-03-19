@@ -27,8 +27,19 @@ void main(void)
 
     // TODO CS248 Part3: Normal Mapping
     // compute 3x3 tangent space to world space matrix here: tan2world
-    
-       
+
+    // Calculate bitangent as last missing axis
+    vec3 bitangent = cross(vtx_normal, vtx_tangent);
+
+    // Normalize all values
+    vec3 tan_norm = normalize(vtx_tangent);
+    vec4 bitan_norm = normalize(bitangent);
+
+    // Set up transformation matrix
+    mat3 rotation = mat3(tan_norm, bitan_norm, vtx_normal);
+
+    mat3 tan2World = obj2WorldNorm * rotation;
+
     // Tips:
     //
     // (1) Make sure you normalize all columns of the matrix so that it is a rotation matrix.

@@ -89,25 +89,6 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     vec3 result = diffuse + specular;
 
     return result;
-
-
-
-
-    // vec3 N_norm = N.normalize();
-    // vec3 L_norm = L.normalize();
-    // double angle = dot(L_norm, N_norm);
-    // float diff = diffuse_color * max(0.0, dot(-L, N));
-
-    // vec3 D_reflect = 2 * dot(L_norm, N_norm) * N_norm * ;
-    // D_reflect.normalize();
-    // float spec = specular_color * (max(0.0, dot(V.normalize(), D_reflect))) ** specular_exponent;
-
-    // TODO CS248 Part 2: Phong Reflectance
-    // Implement diffuse and specular terms of the Phong
-    // reflectance model here.
-
-    //return diffuse_color;
-
 }
 
 //
