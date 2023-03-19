@@ -14,7 +14,9 @@ uniform bool useMirrorBRDF;         // true if mirror brdf should be used (defau
 
 uniform sampler2D diffuseTextureSampler;
 
-// TODO CS248 Part 3: Normal Mapping
+// CS248 Part 3: Normal Mapping
+uniform sampler2D normalMappingSampler;
+
 // TODO CS248 Part 4: Environment Mapping
 
 
@@ -70,7 +72,7 @@ vec3 Diffuse_BRDF(vec3 L, vec3 N, vec3 diffuseColor) {
 //
 vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color, float specular_exponent)
 {
-    // TODO CS248 Part 2: Phong Reflectance
+    // CS248 Part 2: Phong Reflectance
     // Implement diffuse and specular terms of the Phong
     // reflectance model here.
 
@@ -80,34 +82,15 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
     vec3 N_norm = normalize(N);
     
     // Direction vector
-    vec3 R = 2 * dot(L_norm, N_norm) * N_norm - L_norm;
+    vec3 R = (2 * dot(L_norm, N_norm) * N_norm) - L_norm;
 
     // Components for diffuse and specular
-    vec3 diffuse = dot(L_norm, N_norm) * diffuse_color;
-    vec3 specular = pow(dot(R, V_norm), specular_exponent) * specular_color;
+    vec3 diffuse = diffuse_color * max (0, dot(L_norm, N_norm));
+    vec3 specular = specular_color * pow(max (0, dot(R, V_norm)), specular_exponent);
 
     vec3 result = diffuse + specular;
 
     return result;
-
-
-
-
-    // vec3 N_norm = N.normalize();
-    // vec3 L_norm = L.normalize();
-    // double angle = dot(L_norm, N_norm);
-    // float diff = diffuse_color * max(0.0, dot(-L, N));
-
-    // vec3 D_reflect = 2 * dot(L_norm, N_norm) * N_norm * ;
-    // D_reflect.normalize();
-    // float spec = specular_color * (max(0.0, dot(V.normalize(), D_reflect))) ** specular_exponent;
-
-    // TODO CS248 Part 2: Phong Reflectance
-    // Implement diffuse and specular terms of the Phong
-    // reflectance model here.
-
-    //return diffuse_color;
-
 }
 
 //
@@ -156,12 +139,10 @@ void main(void)
         diffuseColor = vertex_diffuse_color;
     }
 
-
-
     // perform normal map lookup if required
     vec3 N = vec3(0);
     if (useNormalMapping) {
-       // TODO: CS248 Part 3: Normal Mapping:
+       // CS248 Part 3: Normal Mapping:
        // use tan2World in the normal map to compute the
        // world space normal based on the normal map.
 
@@ -171,8 +152,11 @@ void main(void)
        //
        // In other words:   tangent_space_normal = texture_value * 2.0 - 1.0;
 
-       // replace this line with your implementation
-       N = normalize(normal);
+       vec3 texture_value = texture(normalMappingSampler, texcoord).rgb;
+       vec3 tangent_space_normal = texture_value * 2.0 - 1.0;
+       vec3 world_space_normal = tan2world * tangent_space_normal;
+
+       N = normalize(world_space_normal);
 
     } else {
        N = normalize(normal);
