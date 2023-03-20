@@ -257,7 +257,10 @@ void main(void)
         // 1. Modulate intensity by a factor of 1/D^2, where D is the distance from the
         //    spotlight to the current surface point.  For robustness, it's common to use 1/(1 + D^2)
         //    to never multiply by a value greather than 1.
-        //
+
+        float int_fact = 1.0 / (1.0 + dot(dir_to_surface, dir_to_surface));
+        intensity *= int_fact;
+
         // 2. Modulate the resulting intensity based on whether the surface point is in the cone of
         //    illumination.  To achieve a smooth falloff, consider the following rules
         //    
@@ -271,10 +274,17 @@ void main(void)
         //
         //    -- The reference solution uses SMOOTHING = 0.1, so 20% of the spotlight region is the smoothly
         //       facing out area.  Smaller values of SMOOTHING will create hard spotlights.
-
-        // CS248: remove this once you perform proper attenuation computations
-        intensity = vec3(0.5, 0.5, 0.5);
-
+        float SMOOTHING = 0.1;
+        float SHADOW_EDGE_UPPER = (1.0 + SMOOTHING) * cone_angle;
+        float SHADOW_EDGE_LOWER = (1.0 - SMOOTHING) * cone_angle;
+        
+        if (angle > SHADOW_EDGE_UPPER) {
+          intensity *= 0;
+        } else if (angle >= SHADOW_EDGE_LOWER && angle <= SHADOW_EDGE_UPPER) {
+          float diff = SHADOW_EDGE_UPPER - SHADOW_EDGE_LOWER;
+          float lerp_int = (angle - SHADOW_EDGE_UPPER) / (-diff);
+          intensity *= lerp_int;
+        }
 
         // Render Shadows for all spot lights
         // TODO CS248 Part 5.2: Shadow Mapping: comute shadowing for spotlight i here 
