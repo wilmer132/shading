@@ -42,6 +42,7 @@ uniform float spot_light_angles[MAX_NUM_LIGHTS];
 //
 // material-specific uniforms
 //
+uniform sampler2DArray depthTextureArray;
 
 // parameters to Phong BRDF
 uniform float spec_exp;
@@ -54,6 +55,7 @@ in vec2 texcoord;     // surface texcoord (uv)
 in vec3 dir2camera;   // vector from surface point to camera
 in mat3 tan2world;    // tangent space to world space transform
 in vec3 vertex_diffuse_color; // surface color
+in vec4 shadowPosVec[MAX_NUM_LIGHTS];
 
 out vec4 fragColor;
 
@@ -288,7 +290,24 @@ void main(void)
 
         // Render Shadows for all spot lights
         // TODO CS248 Part 5.2: Shadow Mapping: comute shadowing for spotlight i here 
+        vec2 shadow_uv = shadowPosVec[i].xy / shadowPosVec[i].w;
+        float shadow_dist = shadowPosVec[i].z / shadowPosVec[i].w;
 
+        float pcf_step_size = 256;
+        float shadowItems = 0;
+        for (int j=-2; j<=2; j++) {
+          for (int k=-2; k<=2; k++) {
+            vec2 offset = vec2(j,k) / pcf_step_size;
+            // sample shadow map at shadow_uv + offset
+            vec3 depthSample = vec3(shadow_uv + offset, i);
+            // and test if the surface is in shadow according to this sample
+            float depth = texture(depthTextureArray, depthSample).x;
+            if (shadow_dist > depth + 0.005) shadowItems += 1;
+          }
+        }
+
+        float il_att = (25.0 - shadowItems) / 25.0;
+        intensity *= il_att;
 
 	    vec3 L = normalize(-spot_light_directions[i]);
 		vec3 brdf_color = Phong_BRDF(L, V, N, diffuseColor, specularColor, specularExponent);
