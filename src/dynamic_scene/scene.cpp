@@ -286,10 +286,10 @@ void Scene::renderShadowPass(int shadowedLightIndex) {
     // worldToShadowLight_[shadowedLightIndex].zero();
     auto fb_bind = gl_mgr_->bindFrameBuffer(shadowFrameBufferId_[shadowedLightIndex]);
 
-    Vector3D lightUp = Vector3D(0.0, 1.0, 0.0);
+    Vector3D UP = Vector3D(0.0, 1.0, 0.0);
     /* Copied from Scene::render. From ed: updir can be camera, but it must be consistent.  */
-    // Matrix4x4 worldToLight = createWorldToCameraMatrix(lightPos, lightDir, camera_->getUpDir());
-    Matrix4x4 worldToLight = createWorldToCameraMatrix(lightPos, lightDir, lightUp);
+    Matrix4x4 worldToLight = createWorldToCameraMatrix(lightPos, lightDir, camera_->getUpDir());
+    // Matrix4x4 worldToLight = createWorldToCameraMatrix(lightPos, lightDir, UP);
     Matrix4x4 lightProj = createPerspectiveMatrix(fovy, aspect, near, far);
     Matrix4x4 worldToLightNDC = lightProj * worldToLight;
 

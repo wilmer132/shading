@@ -288,7 +288,7 @@ void main(void)
 
         // Render Shadows for all spot lights
         // TODO CS248 Part 5.2: Shadow Mapping: comute shadowing for spotlight i here 
-
+        vec2 shadow_uv = shadowPosVec.xy / shadowPosVec.w;
 
 	    vec3 L = normalize(-spot_light_directions[i]);
 		vec3 brdf_color = Phong_BRDF(L, V, N, diffuseColor, specularColor, specularExponent);
