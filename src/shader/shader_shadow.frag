@@ -282,7 +282,7 @@ void main(void)
           intensity *= 0;
         } else if (angle >= SHADOW_EDGE_LOWER && angle <= SHADOW_EDGE_UPPER) {
           float diff = SHADOW_EDGE_UPPER - SHADOW_EDGE_LOWER;
-          float lerp_int = (angle - SHADOW_EDGE_UPPER) / (-diff);
+          float lerp_int = (SHADOW_EDGE_UPPER - angle) / (diff);
           intensity *= lerp_int;
         }
 
