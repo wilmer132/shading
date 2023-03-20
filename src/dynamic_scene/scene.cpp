@@ -43,12 +43,11 @@ Matrix4x4 createPerspectiveMatrix(float fovy, float aspect, float near, float fa
 }
 
 Matrix4x4 createWorldToCameraMatrix(const Vector3D& eye, const Vector3D& at, const Vector3D& up) {
-
   // CS248 Part 1: Coordinate transform
   // Compute the matrix that transforms a point in world space to a point in camera space.
 
   // Construct orthonormal frame
-  Vector3D W = at; 
+  Vector3D W = at - eye; 
   W.normalize();
   Vector3D U = cross(W, up);
   U.normalize();
@@ -63,7 +62,7 @@ Matrix4x4 createWorldToCameraMatrix(const Vector3D& eye, const Vector3D& at, con
   mat[3][0] = 0.0; mat[3][1] = 0.0; mat[3][2] = 0.0; mat[3][3] = 1.0; 
 
   // Translate matrix to have starting position of camera location
-  return mat.translation(-eye);
+  return mat.T() * Matrix4x4::translation(-eye);
 }
 
 // Creates two triangles (6 positions, 18 floats) making up a square
