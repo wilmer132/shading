@@ -17,8 +17,8 @@ uniform sampler2D diffuseTextureSampler;
 // CS248 Part 3: Normal Mapping
 uniform sampler2D normalMappingSampler;
 
-// TODO CS248 Part 4: Environment Mapping
-
+// CS248 Part 4: Environment Mapping
+uniform sampler2D environmentMappingSampler;
 
 //
 // lighting environment definition. Scenes may contain directional
@@ -101,7 +101,7 @@ vec3 Phong_BRDF(vec3 L, vec3 V, vec3 N, vec3 diffuse_color, vec3 specular_color,
 vec3 SampleEnvironmentMap(vec3 D)
 {
     //
-    // TODO CS248 Part 4: Environment Mapping
+    // CS248 Part 4: Environment Mapping
     // sample environment map in direction D.  This requires
     // converting D into spherical coordinates where Y is the polar direction
     // (warning: in our scene, theta is angle with Y axis, which differs from
@@ -117,7 +117,25 @@ vec3 SampleEnvironmentMap(vec3 D)
     // (3) How do you convert theta and phi to normalized texture
     //     coordinates in the domain [0,1]^2?
 
-    return vec3(.25, .25, .25);    
+
+    vec3 D_norm = normalize(D);
+
+    // Right handed coordinates from Cartesian to Sphere
+    // X: Towards Us -> Towards Right
+    // Y: Towards Right -> Up
+    // Z: Up -> Towards Us
+    float theta = acos(D_norm.y);           // Determine vertical position
+    float phi = atan(D_norm.x, D_norm.z);   // Determines horiozontal position
+
+    // Change all values to be between 0 and 1
+    float theta_norm = theta / PI;
+    float phi_norm = ((2 * PI - phi) / (2 * PI));
+
+    // Use spherical normed coordinate to pull from map
+    vec2 envcoord = vec2(phi_norm, theta_norm);
+    vec3 texture_value = texture(environmentMappingSampler, envcoord).rgb;
+    
+    return texture_value;    
 }
 
 //
@@ -171,14 +189,19 @@ void main(void)
 
     if (useMirrorBRDF) {
         //
-        // TODO: CS248 Part 4: Environment Mapping:
+        // CS248 Part 4: Environment Mapping:
         // compute perfect mirror reflection direction here.
         // You'll also need to implement environment map sampling in SampleEnvironmentMap()
         //
-        vec3 R = normalize(vec3(1.0));
-        //
 
-        // sample environment map
+        // Find angle going away from object to camera
+        vec3 w_i = normalize(dir2camera); // Make sure it is normal
+
+        // Use equation from lecture
+        // Find angle going away from object towards light
+        vec3 R = -w_i + (2 * dot(w_i, N) * N);
+
+        // Get color / reflectance
         vec3 envColor = SampleEnvironmentMap(R);
         
         // this is a perfect mirror material, so we'll just return the light incident
