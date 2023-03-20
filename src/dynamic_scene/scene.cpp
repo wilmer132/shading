@@ -293,6 +293,10 @@ void Scene::renderShadowPass(int shadowedLightIndex) {
     Matrix4x4 lightProj = createPerspectiveMatrix(fovy, aspect, near, far);
     Matrix4x4 worldToLightNDC = lightProj * worldToLight;
 
+    Matrix4x4 mTrans = Matrix4x4::translation(Vector3D(0.5, 0.5, 0.5));
+    Matrix4x4 mScale = Matrix4x4::scaling(Vector3D(0.5, 0.5, 0.5));
+    worldToShadowLight_[shadowedLightIndex] = mTrans * mScale * worldToLightNDC;
+
     glViewport(0, 0, shadowTextureSize_, shadowTextureSize_);
 
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
